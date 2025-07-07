@@ -65,12 +65,12 @@ class SFTTrainer(Trainer):
         if formatting_func is None and arguments.dataset_text_field is None:
             formatting_func = get_formatting_func_from_dataset(train_dataset, processing_class)
 
-        if not arguments.packing:
-            if data_collator:
-                raise ValueError(
-                    "You passed `packing=False` to the SFTTrainer, but you didn't pass a "
-                    "`dataset_text_field` or `formatting_func` argument."
-                )
+        # if not arguments.packing:
+        #     if data_collator:
+        #         raise ValueError(
+        #             "You passed `packing=False` to the SFTTrainer, but you didn't pass a "
+        #             "`dataset_text_field` or `formatting_func` argument."
+        #         )
 
         self.dataset_num_proc = arguments.dataset_num_proc
         self.dataset_batch_size = arguments.dataset_batch_size
