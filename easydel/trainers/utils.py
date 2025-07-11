@@ -401,7 +401,7 @@ class DataCollatorForCompletionOnlyLM:
         return inputs, labels
 
     def jax_call(self, examples: list[list[int] | tp.Any | dict[str, tp.Any]]) -> dict[str, tp.Any]:
-        print(f"examples: {examples}")
+        # print(f"examples: {examples}")
     
         if isinstance(examples, dict) and "input_ids" in examples:
             batch_size = len(examples["input_ids"])
