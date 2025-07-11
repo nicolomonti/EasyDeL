@@ -399,24 +399,36 @@ class DataCollatorForCompletionOnlyLM:
         return inputs, labels
 
     def jax_call(self, examples: list[list[int] | tp.Any | dict[str, tp.Any]]) -> dict[str, tp.Any]:
+        print(f"examples: {examples}")
+    
+        if isinstance(examples, dict) and "input_ids" in examples:
+            batch_size = len(examples["input_ids"])
+            examples_list = []
+            for i in range(batch_size):
+                example = {"input_ids": examples["input_ids"][i].tolist()}
+                if "attention_mask" in examples:
+                    example["attention_mask"] = examples["attention_mask"][i].tolist()
+                examples_list.append(example)
+            examples = examples_list
+    
         if isinstance(examples[0], tp.Mapping):
             input_ids = [e["input_ids"] for e in examples]
         else:
             input_ids = examples
             examples = [{"input_ids": e} for e in examples]
-
+    
         batch_input = _collate_batch(
             input_ids,
             self.processing_class,
         )
-
+    
         mask_labels = []
         for e in examples:
             ref_tokens = []
             for ida in tolist(e["input_ids"]):
                 token = self.processing_class._convert_id_to_token(ida)
                 ref_tokens.append(token)
-
+    
             # For Chinese tokens, we need extra inf to mark sub-word, e.g [喜,欢]-> [喜，##欢]  # noqa
             if "chinese_ref" in e:
                 ref_pos = tolist(e["chinese_ref"])
