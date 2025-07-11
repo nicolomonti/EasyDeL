@@ -387,7 +387,7 @@ class DataCollatorForCompletionOnlyLM:
         masked_indices = np.random.binomial(1, probability_matrix, size=probability_matrix.shape).astype(bool)  # noqa
         labels[~masked_indices] = -100
         indices_replaced = np.random.binomial(1, 0.8, size=labels.shape).astype(bool) & masked_indices  # noqa
-        inputs[indices_replaced] = self.processing_class.mask_token_id
+        inputs = inputs.at[indices_replaced].set(self.processing_class.mask_token_id)
         indices_random = np.random.binomial(1, 0.5, size=labels.shape).astype(bool) & masked_indices & ~indices_replaced  # noqa
         random_words = np.random.randint(  # noqa
             low=0,
@@ -395,7 +395,7 @@ class DataCollatorForCompletionOnlyLM:
             size=np.count_nonzero(indices_random),
             dtype=np.int64,
         )
-        inputs[indices_random] = random_words
+        inputs = inputs.at[indices_random].set(random_words)
         return inputs, labels
 
     def jax_call(self, examples: list[list[int] | tp.Any | dict[str, tp.Any]]) -> dict[str, tp.Any]:
