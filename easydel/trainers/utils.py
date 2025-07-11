@@ -295,7 +295,9 @@ class DataCollatorForCompletionOnlyLM:
 
         if isinstance(processing_class, str):
             processing_class = AutoTokenizer.from_pretrained(processing_class)
-            self.processing_class = processing_class
+        
+        self.processing_class = processing_class
+
         self.instruction_template = instruction_template
         if isinstance(instruction_template, str):
             self.instruction_token_ids = self.processing_class.encode(
